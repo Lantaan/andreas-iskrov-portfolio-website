@@ -28,24 +28,33 @@ code {
   height: 2vw;
   direction: rtl;
   -webkit-appearance: none;
-  background: #111;
+  background: #000010;
   outline: none;
   border-radius: 100vw;
   overflow: hidden;
-  box-shadow: inset 0 0 5px rgba(0, 0, 0, 1);
   transform-origin: 0 0;
   transform: rotate(90deg);
-  border: 2px solid rgb(14 165 233);
+  border: 2px solid #19b2e0;
 }
 .scrollBar::-webkit-slider-thumb {
   -webkit-appearance: none;
   width: 1vw;
   height: 2vw;
   border-radius: 10px;
-  background: rgb(14 165 233);
+  background: #19b2e0;
   cursor: pointer;
   /*border: 4px solid rgb(14 165 233);*/
-  box-shadow: -2000px 0 0 2000px rgba(192, 38, 211,0.5);
+  box-shadow: -2000px 0 0 2000px rgba(25, 178, 224, 0.5);
+}
+.scrollBar::-moz-range-thumb {
+  -webkit-appearance: none;
+  width: 1vw;
+  height: 2vw;
+  border-radius: 10px;
+  background: #19b2e0;
+  cursor: pointer;
+  /*border: 4px solid rgb(14 165 233);*/
+  box-shadow: -2000px 0 0 2000px rgba(25, 178, 224, 0.5);
 }
 
 

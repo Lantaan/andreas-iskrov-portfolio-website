@@ -61,7 +61,7 @@ class OscillatorSim extends React.Component<any, any>{
 
     render(): React.ReactNode {
         return <>
-            {this.objects.map(object => <span className="bg-sky-500 absolute rounded-full" style={{
+            {this.objects.map(object => <span className="bg-primary absolute rounded-full" style={{
                 left: object.posX * this.scale, top: object.posY * this.scale,
                 width: object.radius * 2 * this.scale, height: object.radius * 2 * this.scale
             }}></span>)}

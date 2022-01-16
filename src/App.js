@@ -2,8 +2,6 @@ import React, { Suspense } from 'react';
 import OscillatorSim from "./2dNoCollisionSim";
 
 
-const ThreeJSStuff = React.lazy(() => import("./ThreeJSStuff"));
-
 
 class App extends React.Component {
   loadingSimRef = React.createRef();
@@ -15,19 +13,23 @@ class App extends React.Component {
       loadingFinished: false
     };
 
+
     this.setLoadingFinishedToTrueWhenSimHasFinished();
   }
 
 
   render() {
-    const loadingSim = <div className='relative left-1/2 top-1/2'>
+    const ThreeJSStuff = React.lazy(() => import("./ThreeJSStuff"));
+    const loadingSim = <><div className='relative left-1/2 top-1/2'>
       <OscillatorSim ref={this.loadingSimRef} />
     </div>
+    <div className='m-auto w-1/2 text-center text-primary text-5xl relative top-1/2'>Loading ...</div>
+    </>
 
     return (
       <div className='h-screen w-screen bg-black overflow-hidden'>
         {<Suspense fallback={loadingSim}>
-          {this.state.loadingFinished ? <ThreeJSStuff /> : loadingSim}
+          {/*this.state.loadingFinished ? <ThreeJSStuff /> : loadingSim*/<ThreeJSStuff />}
         </Suspense>}
       </div>
     );
