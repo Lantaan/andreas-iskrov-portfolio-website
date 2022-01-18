@@ -46,17 +46,23 @@ class Slider extends ShowHideComponent {
             } else return <span ref={this.childContainerRefs[i]} key={i} className={"absolute "}>{component}</span>
         })
 
+        //don't judge me it works ok.
+        const isFirefox = navigator.userAgent.toLowerCase().indexOf('firefox') > -1;
 
 
         return <span onMouseEnter={() => this.setState({ hovering: true })} onMouseLeave={() => this.setState({ hovering: false })}
             className={this.props.classNameContainer + (this.state.aabbGrabbed ? " cursor-grabbing" : " ")}>
 
-            <div style={{ left: (this.state.value / 2) - this.props.bgBorderWidth, top: -this.props.bgBorderWidth }}
+            <div style={{ width: this.state.value, height: this.props.height, left: this.state.value / 2 }} className=""
+            /*empty, invisible div that has a non-absolute positioning so height of Slider can be measured*/></div>
+
+
+            <div style={{ left: (this.state.value / 2) - this.props.bgBorderWidth, top: -this.props.bgBorderWidth+(isFirefox?this.props.height/2:0)  }}
                 className={this.props.classNameBG + " absolute"}></div>
 
 
-            <div style={{ width: this.state.value, height: this.props.height, left: this.state.value / 2 }} ref={this.fgRef}
-                className={(this.state.hovering ? this.props.classNameFGHover : this.props.classNameFG) + " relative"}
+            <div style={{ width: this.state.value, height: this.props.height, left: this.state.value / 2, top:(isFirefox?this.props.height/2:0) }} ref={this.fgRef}
+                className={(this.state.hovering ? this.props.classNameFGHover : this.props.classNameFG) + " absolute"}
                 onMouseDown={(e: React.MouseEvent<HTMLDivElement>) => {
                     if (this.fgRef.current) {
                         const rect = this.fgRef.current.getBoundingClientRect();
@@ -69,20 +75,20 @@ class Slider extends ShowHideComponent {
                     }
                 }}
 
-                onMouseUp={(e: React.MouseEvent<HTMLDivElement>)=>this.resetMouseStuff(e)}
-                onMouseLeave={(e: React.MouseEvent<HTMLDivElement>)=>this.resetMouseStuff(e)}>
+                onMouseUp={(e: React.MouseEvent<HTMLDivElement>) => this.resetMouseStuff(e)}
+                onMouseLeave={(e: React.MouseEvent<HTMLDivElement>) => this.resetMouseStuff(e)}>
                 {this.state.hovering ? childrenInContainers : ""}
             </div>
 
         </span>
     }
 
-    resetMouseStuff(e: React.MouseEvent<HTMLDivElement>){
+    resetMouseStuff(e: React.MouseEvent<HTMLDivElement>) {
         if (this.fgRef.current && this.mouseGrabPos) {
             const rect = this.fgRef.current.getBoundingClientRect();
             const x = (e.clientX - rect.left) * this.fgRef.current.clientWidth / rect.width,
                 y = (e.clientY - rect.top) * this.fgRef.current.clientHeight / rect.height;
-            this.state.aabbGrabbed?.setImpulse(this.mouseGrabPos.x-x, this.mouseGrabPos.y-y);
+            this.state.aabbGrabbed?.setImpulse(this.mouseGrabPos.x - x, this.mouseGrabPos.y - y);
         }
         this.setState({ aabbGrabbed: null });
         this.mouseGrabPos = null;

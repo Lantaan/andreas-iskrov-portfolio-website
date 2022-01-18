@@ -1,9 +1,18 @@
+const nodemailer = require("nodemailer");
 const path = require("path"),
     express = require("express");
 const bodyParser = require("body-parser");
 const app = express();
 
 const port = process.env.PORT || 5000;
+
+const transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: 'andreas.iskrov.server@gmail.com',
+      pass: 'uLitka22'
+    }
+  });
 
 
 app.use(express.static('build'));
@@ -24,6 +33,20 @@ app.listen(port, (err) => {
 
 
 app.post("/sendText", (request, response) => {
+    const mailOptions = {
+        from: 'andreas.iskrov.server@gmail.com',
+        to: 'andreas.iskrov@gmail.com',
+        subject: 'E-Mail from website',
+        text: JSON.stringify(request.body)
+    };
+
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            console.log(error);
+        } else {
+            console.log('Email sent: ' + info.response);
+        }
+    });
     console.log(request.body);
     response.end();
 })

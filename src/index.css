@@ -20,6 +20,12 @@ code {
 }
 
 
+/*bad accessibility features TODO*/
+textarea:focus, input:focus{
+  outline: none;
+}
+
+
 
 .scrollBar {
   position: absolute;
