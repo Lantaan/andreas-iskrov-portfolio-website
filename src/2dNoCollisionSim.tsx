@@ -1,4 +1,4 @@
-import React from "react";
+import {Component} from "react";
 
 
 const forceFactor = 1 / 10,
@@ -45,7 +45,7 @@ class PhysicsObject {
 
 
 
-class OscillatorSim extends React.Component<any, any>{
+class OscillatorSim extends Component<any, any>{
     scale: number = 5;
     objectFirstState: { x: number, y: number, ax: number, ay: number, vx: number, vy: number } = { x: 50, y: 0, ax: 0, ay: 0, vx: 0, vy: 1 }
     objects: PhysicsObject[] = [];
@@ -61,7 +61,7 @@ class OscillatorSim extends React.Component<any, any>{
 
     render(): React.ReactNode {
         return <>
-            {this.objects.map(object => <span className="bg-primary absolute rounded-full" style={{
+            {this.objects.map(object => <span className="bg-h2 absolute rounded-full" style={{
                 left: object.posX * this.scale, top: object.posY * this.scale,
                 width: object.radius * 2 * this.scale, height: object.radius * 2 * this.scale
             }}></span>)}

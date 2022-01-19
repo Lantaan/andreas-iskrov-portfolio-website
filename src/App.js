@@ -1,10 +1,10 @@
-import React, { Suspense } from 'react';
+import { Component, createRef, lazy, Suspense } from "react";
 import OscillatorSim from "./2dNoCollisionSim";
 
 
 
-class App extends React.Component {
-  loadingSimRef = React.createRef();
+class App extends Component {
+  loadingSimRef = createRef();
 
   constructor(props) {
     super(props);
@@ -19,7 +19,7 @@ class App extends React.Component {
 
 
   render() {
-    const ThreeJSStuff = React.lazy(() => import("./ThreeJSStuff"));
+    const ThreeJSStuff = lazy(() => import("./ThreeJSStuff"));
     const loadingSim = <><div className='relative left-1/2 top-1/2'>
       <OscillatorSim ref={this.loadingSimRef} />
     </div>

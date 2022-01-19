@@ -1,36 +1,27 @@
 import * as THREE from 'three'
-import React, { Suspense, useRef } from "react";
+import { createRef, Component } from "react";
 import {
   Canvas,
-  useLoader
 } from "@react-three/fiber";
-import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader'
-import { useGLTF } from '@react-three/drei'
 
-import TextMesh from './TextObjects'
 import { TextRingVarR } from './TextRings'
 import SetCamera from './setCamera';
-import ConnectedInputs from './ConnectedInputs';
 
-import Monke from './Monke'
-import MeshToVertexSpheres from './MeshToVertexSpheres';
 import ConnectedInputsAsSeperateComponents from './ConnectedInputs';
-import Star from './Star';
-import StarSim from './StarSim';
 import Slider from './Slider';
 
 
-class ThreeJSStuff extends React.Component/*<any, any>*/ {
-  textRingRefs/*: React.RefObject<TextRingVarR>[]*/ = Array.from(Array(2)).map(a => React.createRef());
+class ThreeJSStuff extends Component/*<any, any>*/ {
+  textRingRefs/*: React.RefObject<TextRingVarR>[]*/ = Array.from(Array(2)).map(a => createRef());
   selectedRingRef/*: React.RefObject<TextRingVarR>*/ = this.textRingRefs[0];
 
-  specialNeedsRefs = React.createRef();
+  specialNeedsRefs = createRef();
 
-  ringScrollRef/*: React.RefObject<HTMLInputElement>*/ = React.createRef();
+  ringScrollRef/*: React.RefObject<HTMLInputElement>*/ = createRef();
 
-  widthMeasuringDivRef/*: React.RefObject<HTMLDivElement>*/ = React.createRef();
+  widthMeasuringDivRef/*: React.RefObject<HTMLDivElement>*/ = createRef();
 
-  monkeRef/*: React.RefObject<any>*/ = React.createRef();
+  monkeRef/*: React.RefObject<any>*/ = createRef();
 
   rotating/*:boolean*/ = false;
 
@@ -70,12 +61,6 @@ class ThreeJSStuff extends React.Component/*<any, any>*/ {
           <ambientLight />
 
           <SetCamera position={this.state.cameraPos} target={this.selectedRingRef.current?.state.ringOrigin} />
-
-          {/*https://blog.logrocket.com/configure-3d-models-react-three-fiber/*/}
-          {/*<Suspense fallback={null}>
-            <Monke ref={this.monkeRef} />
-            <MeshToVertexSpheres position={new THREE.Vector3(5, 0, 0)} color={"#7194e3"} mesh={this.monkeRef.current} />
-      </Suspense>*/}
 
 
           <TextRingVarR ref={this.textRingRefs[1]} ringOrigin={new THREE.Vector3(50, 0, 0)} opacityRefPoint={this.state.cameraPos}>
@@ -258,6 +243,3 @@ class ThreeJSStuff extends React.Component/*<any, any>*/ {
 
 
 export default ThreeJSStuff;
-
-
-useGLTF.preload('/monke.gltf')
