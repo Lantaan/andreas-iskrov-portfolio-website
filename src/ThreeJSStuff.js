@@ -151,8 +151,8 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
 
   touchStart(e){
     this.touchPosPrevious = new Vector2(
-      e.originalEvent.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
-      e.originalEvent.touches[0].pageY
+      e.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
+      e.touches[0].pageY
     );
     alert(this.touchPosPrevious.x,this.touchPosPrevious.x)
   }
