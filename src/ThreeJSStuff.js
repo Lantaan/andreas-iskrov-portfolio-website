@@ -46,7 +46,7 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
     this.updateScrollWheel();
 
     return (
-      <span onWheel={(e/*: React.WheelEvent*/) => this.wheelEvent(e)} className='absolute w-screen h-screen'
+      <span onWheel={(e/*: React.WheelEvent*/) => this.wheelEvent(e)} className='absolute w-screen h-screen touch-none'
       onTouchStart={(e) => this.touchStart(e)} onTouchMove={(e) => this.touchMove(e)}>
         <span ref={this.widthMeasuringDivRef} className='hidden '></span>
 
@@ -156,12 +156,9 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
     );
   }
   touchMove(e){
-    e.stopPropagation();
-    e.preventDefault();
-
     const deltyY = Math.sign(e.changedTouches[0].pageY - this.touchPosPrevious.y);
-    if (!this.rotating) this.rotateCamera(deltyY * 15, 1);
-    
+    if (!this.rotating) this.rotateCamera(deltyY, 1);
+
     this.touchPosPrevious = new Vector2(
       e.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
       e.touches[0].pageY
