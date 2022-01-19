@@ -47,7 +47,7 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
 
     return (
       <span onWheel={(e/*: React.WheelEvent*/) => this.wheelEvent(e)} className='absolute w-screen h-screen'
-      onTouchStart={(e) => this.touchStart(e)}>
+      onTouchStart={(e) => this.touchStart(e)} onTouchMove={(e) => this.touchMove(e)}>
         <span ref={this.widthMeasuringDivRef} className='hidden '></span>
 
         {/*https://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically*/}
@@ -154,7 +154,14 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
       e.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
       e.touches[0].pageY
     );
-    alert(this.touchPosPrevious.x,this.touchPosPrevious.x)
+  }
+  touchMove(e){
+    const deltyY = e.changedTouches[0].pageY - this.touchPosPrevious.y;
+    if (!this.rotating) this.rotateCamera(deltyY * 15, 1);
+    this.touchPosPrevious = new Vector2(
+      e.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
+      e.touches[0].pageY
+    );
   }
 
   wheelEvent(e/*: React.WheelEvent*/) {
