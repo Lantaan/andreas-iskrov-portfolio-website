@@ -1,16 +1,19 @@
-import { Html } from "@react-three/drei";
-import React from "react";
+import { RefObject, createRef, ReactNode, KeyboardEvent } from "react";
+
+//if it increases, it means the text went to the next line => new input element has to be focused on
+let currentLinesAmount = 0,
+    previousUpdateLinesAmount = 0;
 
 
-function ConnectedInputsAsSeperateComponents(amount: number, widthMeasuringDivRef: React.RefObject<HTMLDivElement>, cssClasses: string): React.ReactNode[] {
-    const inputRefs: React.RefObject<HTMLInputElement>[] = Array.from(Array(amount)).map(x =>
-        x = (React.createRef() as React.RefObject<HTMLInputElement>));
+function ConnectedInputsAsSeperateComponents(amount: number, widthMeasuringDivRef: RefObject<HTMLDivElement>, cssClasses: string): ReactNode[] {
+    const inputRefs: RefObject<HTMLInputElement>[] = Array.from(Array(amount)).map(x =>
+        x = (createRef() as RefObject<HTMLInputElement>));
 
     const inputElements = Array.from(Array(amount)).map((element, i, allInputs) =>
         element = (<input key={i} ref={inputRefs[i]} type={"text"} className={cssClasses}
             onChange={() => updateAllInputs(inputRefs, widthMeasuringDivRef, "")}
 
-            onKeyDown={(e: React.KeyboardEvent) => {
+            onKeyDown={(e: KeyboardEvent) => {
                 keydownInputHandler(e, i, inputRefs, widthMeasuringDivRef, cssClasses)
             }}
         />)
@@ -20,8 +23,8 @@ function ConnectedInputsAsSeperateComponents(amount: number, widthMeasuringDivRe
     return inputElements
 }
 
-function keydownInputHandler(e: React.KeyboardEvent, selfIndex: number,
-    inputRefs: React.RefObject<HTMLInputElement>[], widthMeasuringDivRef: React.RefObject<HTMLDivElement>, cssClasses: string) {
+function keydownInputHandler(e: KeyboardEvent, selfIndex: number,
+    inputRefs: RefObject<HTMLInputElement>[], widthMeasuringDivRef: RefObject<HTMLDivElement>, cssClasses: string) {
     const allInputs: HTMLInputElement[] = [];
     inputRefs.forEach(ref => ref.current ? allInputs.push(ref.current) : undefined);
 
@@ -41,38 +44,41 @@ function keydownInputHandler(e: React.KeyboardEvent, selfIndex: number,
             self.value = inputValue.substring(0, caretPosition)
                 + " " +/*zero width space*/"​" + " " + inputValue.substring(caretPosition);
 
-            next.focus();
+            //next.focus();
             updateAllInputs(inputRefs, widthMeasuringDivRef, "");
-            next.setSelectionRange(0, 0);
+            //next.setSelectionRange(0, 0);
         }
 
     } else if (e.key === "Backspace") {
         if (self.selectionStart === 0) {
             e.stopPropagation();
             e.preventDefault();
-            previous.focus();
-            previous.value = previous.value.slice(0, -2);
-            const previousValueLength = previous.value.length;
             updateAllInputs(inputRefs, widthMeasuringDivRef, "");
-            previous.setSelectionRange(previousValueLength, previousValueLength);
+            if (previous) {
+                /*previous.focus();
+                previous.value = previous.value.slice(0, -2);
+                const previousValueLength = previous.value.length;
+                updateAllInputs(inputRefs, widthMeasuringDivRef, "");
+                previous.setSelectionRange(previousValueLength, previousValueLength);*/
+            }
         }
 
     } else if (e.key === "ArrowDown") {
         e.stopPropagation();
         e.preventDefault();
-        next.focus();
-        next.setSelectionRange(self.selectionStart, self.selectionStart);
+        next?.focus();
+        next?.setSelectionRange(self.selectionStart, self.selectionStart);
 
     } else if (e.key === "ArrowUp") {
         e.stopPropagation();
         e.preventDefault();
-        previous.focus();
-        previous.setSelectionRange(self.selectionStart, self.selectionStart);
+        previous?.focus();
+        previous?.setSelectionRange(self.selectionStart, self.selectionStart);
     }
 }
 
 
-async function updateAllInputs(inputRefs: React.RefObject<HTMLInputElement>[], widthMeasuringDivRef: React.RefObject<HTMLDivElement>, cssClasses: string) {
+async function updateAllInputs(inputRefs: RefObject<HTMLInputElement>[], widthMeasuringDivRef: RefObject<HTMLDivElement>, cssClasses: string) {
     const inputElements: HTMLInputElement[] = [];
     inputRefs.forEach(ref => ref.current ? inputElements.push(ref.current) : undefined);
 
@@ -93,6 +99,8 @@ async function updateAllInputs(inputRefs: React.RefObject<HTMLInputElement>[], w
             widthMeasuringDivRef.current.innerHTML = "";
             let lineText = "";
 
+            if (completeText.length/*there is still text to be managed*/) currentLinesAmount = i;
+
             while (widthMeasuringDivRef.current.getBoundingClientRect().width < inputWidth && completeText.length) {
                 if (completeText[0].search("​"/*zero width space*/) > -1) {
                     lineText += completeText[0];
@@ -109,31 +117,16 @@ async function updateAllInputs(inputRefs: React.RefObject<HTMLInputElement>[], w
                         completeText.splice(0, 1);
 
 
-                    } else if (widthMeasuringDivRef.current.innerHTML.search("-") === -1/* && !completeText.length*/)/*a single word takes up a whole line*/ {
-                        console.log("as")
-                        const currentWordLetters = completeText[0].split('');
-                        let lettersThatFitIntoInput: string = "";
-
-                        widthMeasuringDivRef.current.innerHTML = "";
-
-                        while (widthMeasuringDivRef.current.getBoundingClientRect().width < inputWidth) {
-                            const currentLetter = currentWordLetters[0];
-                            widthMeasuringDivRef.current.innerHTML = widthMeasuringDivRef.current.innerHTML + currentLetter;
-
-                            if (widthMeasuringDivRef.current.getBoundingClientRect().width < inputWidth) {
-                                lettersThatFitIntoInput += currentLetter;
-                                currentWordLetters.splice(0, 1);
-                            } else {
-                                //lettersThatFitIntoInput += "​"+" ";
-                                break;
-                            }
-                        }
-
-                        lineText = lettersThatFitIntoInput; console.log(completeText)
-                        completeText.splice(0, 1, currentWordLetters.join(""));
-                        console.log(completeText)
+                    } else if (widthMeasuringDivRef.current.innerHTML.substring(1).search("-") === -1/*every line starts with a " " yes that is a bug*a single word takes up a whole line*/) {
+                        //TODO doesn't work if more than 1 letter is added at a time (for example when pasted into)
+                        const currentWordWithoutLastLetter = completeText[0].slice(0, -1),//remove last letter
+                            lastLetter = completeText[0].slice(-1);
+                        lineText += currentWordWithoutLastLetter;
+                        completeText.splice(0, 1);
+                        completeText.unshift(lastLetter);//"push from front"
                         break;
-                    }
+
+                    } else break; //no special case, the line just ended
 
 
                     if (!completeText.length) {
@@ -142,12 +135,31 @@ async function updateAllInputs(inputRefs: React.RefObject<HTMLInputElement>[], w
                 }
             }
 
-            while (lineText.charAt(0) === ' ') {
+            //TODO every line has a " " at the start
+            /*if(lineText.charAt(0) === ' ') {
+                console.log(lineText.charAt(0), lineText)
                 lineText = lineText.substring(1);
-            }
+            }*/
 
             inputElements[i].value = lineText;
         }
+
+
+        if (previousUpdateLinesAmount < currentLinesAmount/*new line was entered*/) {
+            const selectedDOMElement = document.activeElement,
+                selectedInputIndex = inputElements.findIndex(input => input === selectedDOMElement);
+
+            inputElements[selectedInputIndex + 1]?.focus();
+
+        } else if (previousUpdateLinesAmount > currentLinesAmount /*one line became empty*/) {
+            const selectedDOMElement = document.activeElement,
+                selectedInputIndex = inputElements.findIndex(input => input === selectedDOMElement);
+
+            inputElements[selectedInputIndex - 1]?.focus();
+        }
+
+        previousUpdateLinesAmount = currentLinesAmount
+
 
         //hiding it again
         widthMeasuringDivRef.current.className = 'hidden';

@@ -9,6 +9,7 @@ import SetCamera from './setCamera';
 
 import ConnectedInputsAsSeperateComponents from './ConnectedInputs';
 import Slider from './Slider';
+import { Vector2 } from 'three';
 
 
 class ThreeJSStuff extends Component/*<any, any>*/ {
@@ -29,6 +30,9 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
     cameraPos: THREE.Vector3,
   }>*/;
 
+  //touch support
+  touchPosPrevious/*: Vector2|null*/;
+
   constructor(props/*: any*/) {
     super(props);
 
@@ -42,7 +46,8 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
     this.updateScrollWheel();
 
     return (
-      <span onWheel={(e/*: React.WheelEvent*/) => this.wheelEvent(e)} className='absolute w-screen h-screen' >
+      <span onWheel={(e/*: React.WheelEvent*/) => this.wheelEvent(e)} className='absolute w-screen h-screen'
+      onTouchStart={(e) => this.touchStart(e)}>
         <span ref={this.widthMeasuringDivRef} className='hidden '></span>
 
         {/*https://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically*/}
@@ -144,6 +149,13 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
     )
   }
 
+  touchStart(e){
+    this.touchPosPrevious = new Vector2(
+      e.originalEvent.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
+      e.originalEvent.touches[0].pageY
+    );
+    alert(this.touchPosPrevious.x,this.touchPosPrevious.x)
+  }
 
   wheelEvent(e/*: React.WheelEvent*/) {
     const delta = Math.sign(e.deltaY);

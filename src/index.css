@@ -32,6 +32,7 @@ textarea:focus, input:focus{
   left: 90%;
   width: 100vh;
   height: 2vw;
+  min-height: 20px;
   direction: rtl;
   -webkit-appearance: none;
   background: #000010;
