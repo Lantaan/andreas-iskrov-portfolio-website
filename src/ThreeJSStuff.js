@@ -157,7 +157,7 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
   }
   touchMove(e){
     const deltyY = Math.sign(e.changedTouches[0].pageY - this.touchPosPrevious.y);
-    if (!this.rotating) this.rotateCamera(deltyY, 1);
+    if (!this.rotating) this.rotateCamera(-deltyY*3, 1);
 
     this.touchPosPrevious = new Vector2(
       e.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
