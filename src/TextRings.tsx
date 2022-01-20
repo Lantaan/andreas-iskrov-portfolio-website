@@ -5,7 +5,9 @@ import TextMesh from './TextObjects'
 import ShowHideComponent from './ShowHideEventComponent'
 
 
-class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrigin: THREE.Vector3, opacityRefPoint: THREE.Vector3 }, any>{
+class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrigin: THREE.Vector3, opacityRefPoint: THREE.Vector3,
+    onSelect?:/*fires when ring becomes main ring*/ Function }, any>{
+
     children: React.ReactNode[];
     //Refs to the TextMesh components
     //childContainerRefs and childrenHeights are in the same order as children
@@ -18,7 +20,7 @@ class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrig
         ringOrigin: THREE.Vector3
     }>;
 
-    constructor(props: { children: React.ReactNode, ringOrigin: THREE.Vector3, opacityRefPoint: THREE.Vector3 }) {
+    constructor(props: { children: React.ReactNode, ringOrigin: THREE.Vector3, opacityRefPoint: THREE.Vector3, onSelect?:/*fires when ring becomes main ring*/ Function }) {
         super(props);
 
         //https://www.smashingmagazine.com/2021/08/react-children-iteration-methods/

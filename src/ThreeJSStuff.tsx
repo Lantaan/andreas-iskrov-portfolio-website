@@ -1,39 +1,41 @@
 import * as THREE from 'three'
-import { createRef, Component } from "react";
-import {
-  Canvas,
-} from "@react-three/fiber";
+import { createRef, Component, RefObject, TouchEvent, WheelEvent, ReactNode } from "react";
+import {Canvas} from "@react-three/fiber";
 
 import { TextRingVarR } from './TextRings'
 import SetCamera from './setCamera';
 
 import ConnectedInputsAsSeperateComponents from './ConnectedInputs';
 import Slider from './Slider';
-import { Vector2 } from 'three';
+import { Vector2, Vector3 } from 'three';
+import SendButton from './SendButton';
 
 
-class ThreeJSStuff extends Component/*<any, any>*/ {
-  textRingRefs/*: React.RefObject<TextRingVarR>[]*/ = Array.from(Array(2)).map(a => createRef());
-  selectedRingRef/*: React.RefObject<TextRingVarR>*/ = this.textRingRefs[0];
+class ThreeJSStuff extends Component<any, any> {
+  textRingsAmount: number = 2;
+  connectedInputsAmount: number = 40;
 
-  specialNeedsRefs = createRef();
+  textRingRefs: RefObject<TextRingVarR>[] = Array.from(Array(this.textRingsAmount)).map(a => createRef());
+  selectedRingRef: RefObject<TextRingVarR> = this.textRingRefs[0];
 
-  ringScrollRef/*: React.RefObject<HTMLInputElement>*/ = createRef();
+  //some custom components need refs, but get them on their own
+  specialNeedsRefs: RefObject<Slider> = createRef();
+  connectedInputsRef: RefObject<HTMLInputElement>[] = Array.from(Array(this.connectedInputsAmount)).map(a => createRef());
+  //ref to the custom scroll bar
+  ringScrollRef: RefObject<HTMLInputElement> = createRef();
 
-  widthMeasuringDivRef/*: React.RefObject<HTMLDivElement>*/ = createRef();
+  widthMeasuringDivRef: RefObject<HTMLDivElement> = createRef();
+  //wether it is allowed to rotate camera around current ring
+  rotating: boolean = true;
 
-  monkeRef/*: React.RefObject<any>*/ = createRef();
-
-  rotating/*:boolean*/ = false;
-
-  state/*: Readonly<{
+  state: Readonly<{
     cameraPos: THREE.Vector3,
-  }>*/;
+  }>;
 
   //touch support
-  touchPosPrevious/*: Vector2|null*/;
+  touchPosPrevious: Vector2 | null = null;
 
-  constructor(props/*: any*/) {
+  constructor(props: any) {
     super(props);
 
     this.state = {
@@ -42,17 +44,16 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
   }
 
 
-  render()/*: React.ReactNode*/ {
+  render(): ReactNode {
     this.updateScrollWheel();
 
     return (
-      <span onWheel={(e/*: React.WheelEvent*/) => this.wheelEvent(e)} className='absolute w-screen h-screen touch-none'
-      onTouchStart={(e) => this.touchStart(e)} onTouchMove={(e) => this.touchMove(e)}>
+      <span onWheel={(e: WheelEvent) => this.wheelEvent(e)} className='absolute w-screen h-screen touch-none'
+        onTouchStart={(e: TouchEvent) => this.touchStart(e)} onTouchMove={(e: TouchEvent) => this.touchMove(e)}>
         <span ref={this.widthMeasuringDivRef} className='hidden '></span>
 
         {/*https://stackoverflow.com/questions/15935837/how-to-display-a-range-input-slider-vertically*/}
-        {/*https://stackoverflow.com/questions/40275891/how-to-reverse-the-direction-in-html5-range-input/40275954*/}
-        <input type={"range"} ref={this.ringScrollRef} onChange={(e/*: React.ChangeEvent<HTMLInputElement>*/) => {
+        <input type={"range"} ref={this.ringScrollRef} onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
           if (e.target.value === "0") e.target.value = (360 * 10).toString();
           this.setCameraDegree(-Number(e.target.value) * Math.PI * 2 / (10 * 360))
         }
@@ -68,22 +69,17 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
           <SetCamera position={this.state.cameraPos} target={this.selectedRingRef.current?.state.ringOrigin} />
 
 
-          <TextRingVarR ref={this.textRingRefs[1]} ringOrigin={new THREE.Vector3(50, 0, 0)} opacityRefPoint={this.state.cameraPos}>
+          <TextRingVarR ref={this.textRingRefs[1]} ringOrigin={new THREE.Vector3(50, 0, 0)} opacityRefPoint={this.state.cameraPos}
+          onSelect={()=>this.onselectContactMeRing()/*I dont understand why in onselectContactMeRing "this" is defined*/}>
             <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(0)}>previous</button>
             <span className='text-h1 text-2xl [opacity:inherit] w-32'>Contact Me</span>
-            {ConnectedInputsAsSeperateComponents(40, this.widthMeasuringDivRef,
-              "bg-transparent text-primary [opacity:inherit] outline-hidden" +
-              "border-solid border-2 border-t-0 border-b-0 border-h2 caret-h2")}
-              <br /> 
-            <button className='text-h1 border-2 border-h1 rounded-md hover:bg-h1 w-44 hover:text-black' onClick={() => {
-              fetch("/sendText", {
-                method: 'POST',
-                headers: {
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ x: "aaaaaaa" })
-              })
-            }}>send</button>
+            {
+            ConnectedInputsAsSeperateComponents(this.connectedInputsAmount, this.widthMeasuringDivRef, this.connectedInputsRef,
+              "focus:bg-[#19b2e020] bg-transparent text-primary [opacity:inherit] outline-hidden" +
+              "border-solid border-2 border-t-0 border-b-0 border-h2 caret-h1")
+              }
+            <br />
+            <SendButton connectedInputsRefArgs={this.connectedInputsRef}/>
             <br />
             <br />
           </TextRingVarR>
@@ -149,25 +145,27 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
     )
   }
 
-  touchStart(e){
+  touchStart(e: TouchEvent) {
     this.touchPosPrevious = new Vector2(
       e.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
       e.touches[0].pageY
     );
   }
-  touchMove(e){
-    const deltyY = Math.sign(e.changedTouches[0].pageY - this.touchPosPrevious.y);
-    if (!this.rotating) this.rotateCamera(-deltyY*5, 1);
+  touchMove(e: TouchEvent) {
+    if (this.touchPosPrevious) {
+      const deltyY = Math.sign(e.changedTouches[0].pageY - this.touchPosPrevious.y);
+      if (this.rotating) this.rotateCamera(-deltyY * 5, 1);
 
-    this.touchPosPrevious = new Vector2(
-      e.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
-      e.touches[0].pageY
-    );
+      this.touchPosPrevious = new Vector2(
+        e.touches[0].pageX,//https://stackoverflow.com/questions/41993176/determine-touch-position-on-tablets-with-javascript,
+        e.touches[0].pageY
+      );
+    }
   }
 
-  wheelEvent(e/*: React.WheelEvent*/) {
+  wheelEvent(e: WheelEvent) {
     const delta = Math.sign(e.deltaY);
-    if (!this.rotating) this.rotateCamera(delta * 15, 1);
+    if (this.rotating) this.rotateCamera(delta * 15, 1);
   }
 
   updateScrollWheel() {
@@ -190,9 +188,11 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
   }
 
 
-  async changeToRing(index/*: number*/) {
+  async changeToRing(index: number) {
     if (this.textRingRefs[index]) {
       this.selectedRingRef = this.textRingRefs[index];
+
+      if(this.selectedRingRef.current?.props.onSelect) this.selectedRingRef.current?.props.onSelect();
 
       const originalCamraPos = this.state.cameraPos,
         newCameraPos = this.calculateCameraPosBasedOnDegree(0);
@@ -217,36 +217,16 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
   }
 
 
-  /*async*/ rotateCamera(degree/*: number*/, time/*:number*/) {
-    /*this.rotating = true;
-
-    const tPerDegree = time / degree;
-    let currentTime = Date.now();
-    const targetTime = currentTime + time;
-    const startDegree = Math.atan2(this.state.cameraPos.z, this.state.cameraPos.y)*180/Math.PI,
-      targetDegree = startDegree + degree;
-
-    for (let currentDegree = startDegree; currentDegree <= targetDegree; currentDegree++) {
-      const loopStartTime = Date.now();
-
-      this.setCameraDegree(currentDegree / 180 * Math.PI);
-      this.updateScrollWheel();
-
-      currentTime = Date.now()
-      const timePassed = currentTime - loopStartTime;
-      await new Promise(resolve => setTimeout(resolve, tPerDegree - timePassed));
-    }
-
-    this.rotating = false;*/
+  rotateCamera(degree: number, time:number) {
     this.setCameraDegree(Math.atan2(this.state.cameraPos.z, this.state.cameraPos.y) + degree * Math.PI / 180);
   }
 
-  setCameraDegree(degree/*: number*/) {
+  setCameraDegree(degree: number) {
     const cameraPos = this.calculateCameraPosBasedOnDegree(degree);
     this.setState({ cameraPos });
   }
 
-  calculateCameraPosBasedOnDegree(degree/*: number*/)/*: THREE.Vector3 | null */ {
+  calculateCameraPosBasedOnDegree(degree: number): Vector3 | null  {
     if (this.selectedRingRef.current) {
       const distCenter = this.selectedRingRef.current.state.radius + 5,
         ringOrigin = this.selectedRingRef.current.state.ringOrigin;
@@ -258,6 +238,14 @@ class ThreeJSStuff extends Component/*<any, any>*/ {
       )
 
     } else return null;
+  }
+
+  onselectContactMeRing(){
+    if(this.connectedInputsRef[0].current){
+      this.connectedInputsRef[0].current.focus();
+      //first time it adds a space for looks
+      if(this.connectedInputsRef[0].current.value === "") this.connectedInputsRef[0].current.value = " ";
+    }
   }
 }
 

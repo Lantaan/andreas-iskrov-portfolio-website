@@ -5,16 +5,15 @@ let currentLinesAmount = 0,
     previousUpdateLinesAmount = 0;
 
 
-function ConnectedInputsAsSeperateComponents(amount: number, widthMeasuringDivRef: RefObject<HTMLDivElement>, cssClasses: string): ReactNode[] {
-    const inputRefs: RefObject<HTMLInputElement>[] = Array.from(Array(amount)).map(x =>
-        x = (createRef() as RefObject<HTMLInputElement>));
+function ConnectedInputsAsSeperateComponents(amount: number, widthMeasuringDivRef: RefObject<HTMLDivElement>,
+    refArray: RefObject<HTMLInputElement>[], cssClasses: string): ReactNode[] {
 
     const inputElements = Array.from(Array(amount)).map((element, i, allInputs) =>
-        element = (<input key={i} ref={inputRefs[i]} type={"text"} className={cssClasses}
-            onChange={() => updateAllInputs(inputRefs, widthMeasuringDivRef, "")}
+        element = (<input ref={refArray[i]} key={i} type={"text"} className={cssClasses}
+            onChange={() => updateAllInputs(refArray, widthMeasuringDivRef, "")}
 
             onKeyDown={(e: KeyboardEvent) => {
-                keydownInputHandler(e, i, inputRefs, widthMeasuringDivRef, cssClasses)
+                keydownInputHandler(e, i, refArray, widthMeasuringDivRef, cssClasses)
             }}
         />)
     );
@@ -22,6 +21,7 @@ function ConnectedInputsAsSeperateComponents(amount: number, widthMeasuringDivRe
 
     return inputElements
 }
+
 
 function keydownInputHandler(e: KeyboardEvent, selfIndex: number,
     inputRefs: RefObject<HTMLInputElement>[], widthMeasuringDivRef: RefObject<HTMLDivElement>, cssClasses: string) {
@@ -44,7 +44,6 @@ function keydownInputHandler(e: KeyboardEvent, selfIndex: number,
             self.value = inputValue.substring(0, caretPosition)
                 + " " +/*zero width space*/"​" + " " + inputValue.substring(caretPosition);
 
-            //next.focus();
             updateAllInputs(inputRefs, widthMeasuringDivRef, "");
             //next.setSelectionRange(0, 0);
         }
@@ -54,13 +53,6 @@ function keydownInputHandler(e: KeyboardEvent, selfIndex: number,
             e.stopPropagation();
             e.preventDefault();
             updateAllInputs(inputRefs, widthMeasuringDivRef, "");
-            if (previous) {
-                /*previous.focus();
-                previous.value = previous.value.slice(0, -2);
-                const previousValueLength = previous.value.length;
-                updateAllInputs(inputRefs, widthMeasuringDivRef, "");
-                previous.setSelectionRange(previousValueLength, previousValueLength);*/
-            }
         }
 
     } else if (e.key === "ArrowDown") {
