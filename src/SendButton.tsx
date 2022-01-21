@@ -13,13 +13,13 @@ function SendButton(props: { connectedInputsRefArgs: RefObject<HTMLInputElement>
             body: JSON.stringify({
                 text:
                     props.connectedInputsRefArgs.reduce((previousValue, currentValue) => {
-                        if (currentValue.current) return previousValue + "/n" + currentValue.current.value;
-                        else return previousValue + "/n"
+                        if (currentValue.current) return previousValue + "\n" + currentValue.current.value;
+                        else return previousValue + "\n"
                     }, "")
             })
         });console.log(props.connectedInputsRefArgs.reduce((previousValue, currentValue) => {
-            if (currentValue.current) return previousValue + "/n" + currentValue.current.value;
-            else return previousValue + "/n"
+            if (currentValue.current) return previousValue + "\n" + currentValue.current.value;
+            else return previousValue + "\n"
         }, ""))
     }}>{pressedAtLeastOnce ? "send again" : "send"}</button>
 }
