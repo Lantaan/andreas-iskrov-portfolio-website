@@ -103,13 +103,13 @@ class ThreeJSStuff extends Component<any, any> {
 
             <br/>
 
-            <div className='text-h2 text-xl [opacity:inherit] w-32'>The quick brown fox jumps over</div>
+            <div className='text-h2 text-xl [opacity:inherit] w-32'>The</div>
             <Slider ref={this.specialNeedsRefs} fillTime={1000} width={1000} height={30} maxValue={70}
               classNameContainer={"relative -left-14 top-1"}
               classNameFG={"bg-h2 [opacity:inherit] block rounded [top:-1px]"}
               classNameFGHover={"bg-transparent border-h2 border-r-2 [opacity:inherit] block rounded [top:-1px]"}
               classNameBG={"border-h2 border-2 w-32 h-8 rounded-md"} bgBorderWidth={2}>
-              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>a</div>
+              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>quick</div>
               <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>lazy</div>
               <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>dog</div>
             </Slider>
