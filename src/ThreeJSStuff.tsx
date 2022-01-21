@@ -88,17 +88,17 @@ class ThreeJSStuff extends Component<any, any> {
           <TextRingVarR ref={this.textRingRefs[0]} ringOrigin={new THREE.Vector3(0, 0, 0)} opacityRefPoint={this.state.cameraPos}>
             <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(1)}>next</button>
 
-            <div className='text-h1 text-2xl [opacity:inherit] w-32'>About Me</div>
+            <div className='text-h1 text-2xl [opacity:inherit] w-32'>Herr Stöckle falls sie das sind, ja das ist nur Platzhaltertext, ja das wird sich bis Montag ändern.</div>
 
-            <div className='text-h2 text-xl [opacity:inherit] w-32'>some skill</div>
+            <div className='text-h2 text-xl [opacity:inherit] w-32'>The quick brown fox jumps over</div>
             <Slider ref={this.specialNeedsRefs} fillTime={1000} width={1000} height={30} maxValue={70}
               classNameContainer={"relative -left-14 top-1"}
               classNameFG={"bg-h2 [opacity:inherit] block rounded [top:-1px]"}
               classNameFGHover={"bg-transparent border-h2 border-r-2 [opacity:inherit] block rounded [top:-1px]"}
               classNameBG={"border-h2 border-2 w-32 h-8 rounded-md"} bgBorderWidth={2}>
-              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>further</div>
-              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>skill</div>
-              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>detail</div>
+              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>a</div>
+              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>lazy</div>
+              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>dog</div>
             </Slider>
 
             <div className='text-primary [opacity:inherit] w-32'>asdasdasdadsas</div>
