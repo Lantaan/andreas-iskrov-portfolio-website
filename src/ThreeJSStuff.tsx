@@ -88,10 +88,18 @@ class ThreeJSStuff extends Component<any, any> {
           <TextRingVarR ref={this.textRingRefs[0]} ringOrigin={new THREE.Vector3(0, 0, 0)} opacityRefPoint={this.state.cameraPos}>
             <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(1)}>next</button>
 
-            <div className='text-h1 [opacity:inherit] w-32'>Herr Stöckle falls sie das sind, </div>
-            <div className='text-h1 [opacity:inherit] w-32'>ja das ist nur Platzhaltertext,</div>
-            <div className='text-h1 [opacity:inherit] w-32'>ja das wird sich bis Montag ändern</div>
-            <div className='text-h1 [opacity:inherit] w-32'>und ja ich werde auf jeden Fall mich hinsetzen und Kommentare für den Code schreiben.</div>
+            <div className='text-h1 [opacity:inherit] w-32'>Herr Stöckle falls</div>
+            <div className='text-h1 [opacity:inherit] w-32'>sie das sind, </div>
+            <div className='text-h1 [opacity:inherit] w-32'>ja das ist nur</div>
+            <div className='text-h1 [opacity:inherit] w-32'>Platzhaltertext,</div>
+            <div className='text-h1 [opacity:inherit] w-32'>ja das wird sich</div>
+            <div className='text-h1 [opacity:inherit] w-32'>bis Montag</div>
+            <div className='text-h1 [opacity:inherit] w-32'> ändern</div>
+            <div className='text-h1 [opacity:inherit] w-32'>und ja ich werde</div>
+            <div className='text-h1 [opacity:inherit] w-32'> auf jeden Fall</div>
+            <div className='text-h1 [opacity:inherit] w-32'> mich hinsetzen</div>
+            <div className='text-h1 [opacity:inherit] w-32'> und Kommentare</div>
+            <div className='text-h1 [opacity:inherit] w-32'> schreiben.</div>
 
             <div className='text-h2 text-xl [opacity:inherit] w-32'>The quick brown fox jumps over</div>
             <Slider ref={this.specialNeedsRefs} fillTime={1000} width={1000} height={30} maxValue={70}
