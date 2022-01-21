@@ -101,6 +101,8 @@ class ThreeJSStuff extends Component<any, any> {
             <div className='text-h1 [opacity:inherit] w-32'> und Kommentare</div>
             <div className='text-h1 [opacity:inherit] w-32'> schreiben.</div>
 
+            <br/>
+
             <div className='text-h2 text-xl [opacity:inherit] w-32'>The quick brown fox jumps over</div>
             <Slider ref={this.specialNeedsRefs} fillTime={1000} width={1000} height={30} maxValue={70}
               classNameContainer={"relative -left-14 top-1"}
