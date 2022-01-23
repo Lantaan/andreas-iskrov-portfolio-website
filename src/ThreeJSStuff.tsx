@@ -1,6 +1,6 @@
-import {Vector2, Vector3, Clock} from 'three'
-import { createRef, Component, RefObject, TouchEvent, WheelEvent, ReactNode } from "react";
-import {Canvas} from "@react-three/fiber";
+import { Vector2, Vector3, Clock } from 'three'
+import { createRef, Component, RefObject, TouchEvent, WheelEvent, ReactNode, createElement } from "react";
+import { Canvas } from "@react-three/fiber";
 
 import { TextRingVarR } from './TextRings'
 import SetCamera from './setCamera';
@@ -69,38 +69,56 @@ class ThreeJSStuff extends Component<any, any> {
 
 
           <TextRingVarR ref={this.textRingRefs[1]} ringOrigin={new Vector3(50, 0, 0)} opacityRefPoint={this.state.cameraPos}
-          onSelect={()=>this.onselectContactMeRing()/*I dont understand why in onselectContactMeRing "this" is defined*/}>
+            onSelect={() => this.onselectContactMeRing()/*I dont understand why in onselectContactMeRing "this" is defined*/}>
             <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(0)}>previous</button>
             <span className='text-h1 text-2xl [opacity:inherit] w-32'>Contact Me</span>
             {
-            ConnectedInputsAsSeperateComponents(this.connectedInputsAmount, this.widthMeasuringDivRef, this.connectedInputsRef,
-              "focus:bg-[#19b2e020] bg-transparent text-primary [opacity:inherit] outline-hidden" +
-              "border-solid border-2 border-t-0 border-b-0 border-h2 caret-h1")
-              }
+              ConnectedInputsAsSeperateComponents(this.connectedInputsAmount, this.widthMeasuringDivRef, this.connectedInputsRef,
+                "focus:bg-[#19b2e020] bg-transparent text-primary [opacity:inherit] outline-hidden" +
+                "border-solid border-2 border-t-0 border-b-0 border-h2 caret-h1")
+            }
             <br />
-            <SendButton connectedInputsRefArgs={this.connectedInputsRef}/>
+            <SendButton connectedInputsRefArgs={this.connectedInputsRef} />
             <br />
             <br />
           </TextRingVarR>
 
 
           <TextRingVarR ref={this.textRingRefs[0]} ringOrigin={new Vector3(0, 0, 0)} opacityRefPoint={this.state.cameraPos}>
-            <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(1)}>next</button>
+            <div className='text-primary text-[8px] [opacity:inherit] w-48 h-3'>Ich bin</div>
 
-            <div className='text-h1 [opacity:inherit] w-32'>Herr Stöckle falls</div>
-            <div className='text-h1 [opacity:inherit] w-32'>sie das sind, </div>
-            <div className='text-h1 [opacity:inherit] w-32'>ja das ist nur</div>
-            <div className='text-h1 [opacity:inherit] w-32'>Platzhaltertext,</div>
-            <div className='text-h1 [opacity:inherit] w-32'>ja das wird sich</div>
-            <div className='text-h1 [opacity:inherit] w-32'>bis Montag</div>
-            <div className='text-h1 [opacity:inherit] w-32'> ändern</div>
-            <div className='text-h1 [opacity:inherit] w-32'>und ja ich werde</div>
-            <div className='text-h1 [opacity:inherit] w-32'> auf jeden Fall</div>
-            <div className='text-h1 [opacity:inherit] w-32'> mich hinsetzen</div>
-            <div className='text-h1 [opacity:inherit] w-32'> und Kommentare</div>
-            <div className='text-h1 [opacity:inherit] w-32'> schreiben.</div>
+            <div className='text-h1 [opacity:inherit] w-48'>Andreas Iskrov</div>
+
+
+            <div className='text-primary [opacity:inherit] w-48 text-xs'></div>
+
+            <div className='text-primary [opacity:inherit] w-48 text-xs'>
+              Aktuell besuche ich die <span className='text-h2'>Q11</span>
+            </div>
+
+            <div className='text-primary [opacity:inherit] w-48 text-xs'>
+              des <a className='text-h2 hover:underline'
+              /*https://stackoverflow.com/questions/15551779/open-link-in-new-tab-or-window*/
+                target="_blank" rel="noopener noreferrer" href='https://www.ovtg.de/index.php?id=2'>Otto-von-Taube-Gymnasium</a>
+            </div>
 
             <br/>
+
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Meine größte schwäche ist, dass ich</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>9-10h Schlaf brauche.</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Das bedeutet, dass ich ca. jetzt</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>schlafen gehen muss.</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Deshalb schiebe ich das Schreiben</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>auf morgen auf und hoffe dass Sie</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>(ich schätze Mal Check 24) das nie</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>sehen. Wenn ich jetzt wirklich am</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>ersten Tag nach Bewerbungsschluss</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>angeschaut werde hab ich halt Pech</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>gehabt. Im folgenden finden Sie</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Platzhalter um zu zeigen was meine</div>
+            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Webseite kann. Und drücken Sie auf jeden Fall auf den "weiter" Knopf.</div>
+
+            <br />
 
             <div className='text-h2 text-xl [opacity:inherit] w-32'>The</div>
             <Slider ref={this.specialNeedsRefs} fillTime={1000} width={1000} height={30} maxValue={70}
@@ -130,25 +148,9 @@ class ThreeJSStuff extends Component<any, any> {
             <div className='text-primary [opacity:inherit] w-32'>mn.,iolö</div>
             <div className='text-primary [opacity:inherit] w-32'>qqewscxopkähj</div>
 
-            <div className='text-primary [opacity:inherit] w-32'>kkkksdfsdfbv</div>
-            <div className='text-primary [opacity:inherit] w-32'>aaaaaa</div>
-            <div className='text-primary [opacity:inherit] w-32'>kjlxc xsbfdb</div>
-            <div className='text-primary [opacity:inherit] w-32'>12332453546</div>
-            <div className='text-primary [opacity:inherit] w-32'>püäpü+#dfg</div>
-            <div className='text-primary [opacity:inherit] w-32'>,m.lk-klöoi</div>
-            <div className='text-primary [opacity:inherit] w-32'>hu cxvbse </div>
-            <div className='text-primary [opacity:inherit] w-32'>90570ßßß</div>
-            <div className='text-primary [opacity:inherit] w-32'>+ü##+poötzhcxd</div>
-            <div className='text-primary [opacity:inherit] w-32'>dfghsert32</div>
-            <div className='text-primary [opacity:inherit] w-32'>mn.,iolö</div>
-            <div className='text-primary [opacity:inherit] w-32'>qqewscxopkähj</div>
+            <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(1)}>weiter</button>
 
-            <div className='text-primary [opacity:inherit] w-32'>adwtbxfddsg</div>
-            <div className='text-primary [opacity:inherit] w-32'>uzkhncgaws</div>
-            <div className='text-primary [opacity:inherit] w-32'>sdfpöovmxfbvd</div>
-            <div className='text-primary [opacity:inherit] w-32'>esöpoi</div>
-            <div className='text-primary [opacity:inherit] w-32'>nvbckjiuy78324</div>
-            <div className='text-primary [opacity:inherit] w-32'>342098#</div>
+            <br />
 
           </TextRingVarR>
 
@@ -206,7 +208,7 @@ class ThreeJSStuff extends Component<any, any> {
       this.selectedRingRef = this.textRingRefs[index];
 
       //if the newly selected ring has a onSelect function, call it
-      if(this.selectedRingRef.current?.props.onSelect) this.selectedRingRef.current?.props.onSelect();
+      if (this.selectedRingRef.current?.props.onSelect) this.selectedRingRef.current?.props.onSelect();
 
       const originalCamraPos/*camera pos before movement*/ = this.state.cameraPos,
         newCameraPos/*camera pos after movement*/ = this.calculateCameraPosBasedOnDegree(0);
@@ -241,7 +243,7 @@ class ThreeJSStuff extends Component<any, any> {
   }
 
 
-  rotateCamera(degree: number, time:number) {
+  rotateCamera(degree: number, time: number) {
     this.setCameraDegree(Math.atan2(this.state.cameraPos.z, this.state.cameraPos.y) + degree * Math.PI / 180);
   }
 
@@ -251,7 +253,7 @@ class ThreeJSStuff extends Component<any, any> {
   }
 
 
-  calculateCameraPosBasedOnDegree(degree: number): Vector3 | null  {
+  calculateCameraPosBasedOnDegree(degree: number): Vector3 | null {
     if (this.selectedRingRef.current) {
       const distCenter = this.selectedRingRef.current.state.radius + 5/*if there was no 5,
       the camera would be directly on the ring and it couldn't see the ring*/,
@@ -268,11 +270,11 @@ class ThreeJSStuff extends Component<any, any> {
   }
 
   //this is a special function that is fired when the ring with the connected inputs is selected
-  onselectContactMeRing(){
-    if(this.connectedInputsRef[0].current){
+  onselectContactMeRing() {
+    if (this.connectedInputsRef[0].current) {
       this.connectedInputsRef[0].current.focus();
       //first time it adds a space for looks
-      if(this.connectedInputsRef[0].current.value === "") this.connectedInputsRef[0].current.value = " ";
+      if (this.connectedInputsRef[0].current.value === "") this.connectedInputsRef[0].current.value = " ";
     }
   }
 }
