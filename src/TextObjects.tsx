@@ -1,13 +1,12 @@
-import * as THREE from 'three'
-import React, { useRef, useState } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Euler, Vector3 } from 'three'
+import { forwardRef, ForwardedRef, ReactNode } from 'react'
 import { Html } from '@react-three/drei'
 
 
-
+//return a 3d Text object
 function TextMesh(props: {
-    children: React.ReactNode; className?: string; rotation?: THREE.Euler; position?: THREE.Vector3;
-    spanRef?: React.ForwardedRef<any>; opacity?: number;
+    children: ReactNode; className?: string; rotation?: Euler; position?: Vector3;
+    spanRef?: ForwardedRef<any>/*ref to the span that holds all the children*/; opacity?: number;
 }): JSX.Element {
     return (
         <mesh rotation={props.rotation} position={props.position}>
@@ -18,8 +17,8 @@ function TextMesh(props: {
     )
 }
 
-
-export default React.forwardRef((props: { children: React.ReactNode; className?: string; rotation?: THREE.Euler; position?: THREE.Vector3; opacity?: number; },
+//allows to reference the inner span
+export default forwardRef((props: { children: React.ReactNode; className?: string; rotation?: Euler; position?: Vector3; opacity?: number; },
     spanRef: any) => <TextMesh
         spanRef={spanRef} {...props}
-    />);
+/>);

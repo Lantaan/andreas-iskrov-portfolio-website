@@ -1,4 +1,4 @@
-import * as THREE from 'three'
+import {Vector2, Vector3, Clock} from 'three'
 import { createRef, Component, RefObject, TouchEvent, WheelEvent, ReactNode } from "react";
 import {Canvas} from "@react-three/fiber";
 
@@ -7,7 +7,6 @@ import SetCamera from './setCamera';
 
 import ConnectedInputsAsSeperateComponents from './ConnectedInputs';
 import Slider from './Slider';
-import { Vector2, Vector3 } from 'three';
 import SendButton from './SendButton';
 
 
@@ -29,7 +28,7 @@ class ThreeJSStuff extends Component<any, any> {
   rotating: boolean = true;
 
   state: Readonly<{
-    cameraPos: THREE.Vector3,
+    cameraPos: Vector3,
   }>;
 
   //touch support
@@ -39,7 +38,7 @@ class ThreeJSStuff extends Component<any, any> {
     super(props);
 
     this.state = {
-      cameraPos: new THREE.Vector3()
+      cameraPos: new Vector3()
     }
   }
 
@@ -69,7 +68,7 @@ class ThreeJSStuff extends Component<any, any> {
           <SetCamera position={this.state.cameraPos} target={this.selectedRingRef.current?.state.ringOrigin} />
 
 
-          <TextRingVarR ref={this.textRingRefs[1]} ringOrigin={new THREE.Vector3(50, 0, 0)} opacityRefPoint={this.state.cameraPos}
+          <TextRingVarR ref={this.textRingRefs[1]} ringOrigin={new Vector3(50, 0, 0)} opacityRefPoint={this.state.cameraPos}
           onSelect={()=>this.onselectContactMeRing()/*I dont understand why in onselectContactMeRing "this" is defined*/}>
             <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(0)}>previous</button>
             <span className='text-h1 text-2xl [opacity:inherit] w-32'>Contact Me</span>
@@ -85,7 +84,7 @@ class ThreeJSStuff extends Component<any, any> {
           </TextRingVarR>
 
 
-          <TextRingVarR ref={this.textRingRefs[0]} ringOrigin={new THREE.Vector3(0, 0, 0)} opacityRefPoint={this.state.cameraPos}>
+          <TextRingVarR ref={this.textRingRefs[0]} ringOrigin={new Vector3(0, 0, 0)} opacityRefPoint={this.state.cameraPos}>
             <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(1)}>next</button>
 
             <div className='text-h1 [opacity:inherit] w-32'>Herr Stöckle falls</div>
@@ -181,7 +180,7 @@ class ThreeJSStuff extends Component<any, any> {
     if (this.rotating) this.rotateCamera(delta * 15, 1);
   }
 
-  updateScrollWheel() {
+  updateScrollWheel()/*sets the custom scroll wheel value to the camera degree value*/ {
     const currentDegree = ((Math.atan2(this.state.cameraPos.z, this.state.cameraPos.y)) / Math.PI) * 180;
     const posDegree = 360 - (currentDegree < 0 ? 360 + currentDegree : currentDegree);
     if (this.ringScrollRef.current) this.ringScrollRef.current.value = (posDegree * 10).toString();
@@ -201,29 +200,41 @@ class ThreeJSStuff extends Component<any, any> {
   }
 
 
-  async changeToRing(index: number) {
+  async changeToRing(index/*index of ring that should be changed to*/: number) {
     if (this.textRingRefs[index]) {
+      //sets new main ring
       this.selectedRingRef = this.textRingRefs[index];
 
+      //if the newly selected ring has a onSelect function, call it
       if(this.selectedRingRef.current?.props.onSelect) this.selectedRingRef.current?.props.onSelect();
 
-      const originalCamraPos = this.state.cameraPos,
-        newCameraPos = this.calculateCameraPosBasedOnDegree(0);
+      const originalCamraPos/*camera pos before movement*/ = this.state.cameraPos,
+        newCameraPos/*camera pos after movement*/ = this.calculateCameraPosBasedOnDegree(0);
 
-      if (newCameraPos) {
-        const time = 1;
-        const clock = new THREE.Clock();
+      if (newCameraPos/*typescript*/) {
+        const time = 1/*in seconds*/;
+        //three js Clock counts in seconds instead of millisecond for some reason
+        const clock = new Clock();
         clock.start();
 
+        //while the animation didn't outstay its welcome ...
         while (clock.getElapsedTime() < time) {
+          //how much of the animation is allready completed
+          //not really percentage but you get the idea
           const percentageOfWay = clock.elapsedTime / time;
 
+          //lerp creates a sort of "intermediate" Vector that is partially originalCamraPos
+          //and partially newCameraPos. The higher percentageOfWay the more the new Vector (cameraIntermediatePosition)
+          //is newCameraPos
           const cameraIntermediatePosition = originalCamraPos.clone().lerp(newCameraPos, percentageOfWay);
           this.setState({ cameraPos: cameraIntermediatePosition })
 
+          //wait 1ms
           await new Promise(res => setTimeout(res, 1))
         }
 
+        //after the animation is complete the cameraPos is only like 99% of newCameraPos,
+        //and it actually shows
         this.setState({ cameraPos: newCameraPos })
       }
     }
@@ -239,12 +250,15 @@ class ThreeJSStuff extends Component<any, any> {
     this.setState({ cameraPos });
   }
 
+
   calculateCameraPosBasedOnDegree(degree: number): Vector3 | null  {
     if (this.selectedRingRef.current) {
-      const distCenter = this.selectedRingRef.current.state.radius + 5,
+      const distCenter = this.selectedRingRef.current.state.radius + 5/*if there was no 5,
+      the camera would be directly on the ring and it couldn't see the ring*/,
         ringOrigin = this.selectedRingRef.current.state.ringOrigin;
 
-      return new THREE.Vector3(
+      //some trigonometry
+      return new Vector3(
         ringOrigin.x,
         Math.cos(degree) * distCenter + ringOrigin.y,
         Math.sin(degree) * distCenter + ringOrigin.z
@@ -253,6 +267,7 @@ class ThreeJSStuff extends Component<any, any> {
     } else return null;
   }
 
+  //this is a special function that is fired when the ring with the connected inputs is selected
   onselectContactMeRing(){
     if(this.connectedInputsRef[0].current){
       this.connectedInputsRef[0].current.focus();

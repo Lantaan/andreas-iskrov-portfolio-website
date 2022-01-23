@@ -1,21 +1,31 @@
-import { RefObject, createRef, ReactNode, KeyboardEvent } from "react";
+import { RefObject, ReactNode, KeyboardEvent } from "react";
 
-//if it increases, it means the text went to the next line => new input element has to be focused on
+//a zero width space (zws) represents a command to go to next line
+//so basically a \n except a zws can be placed in a text input element
+
+//lines amount tells in how many lines there is text (currently and on last update)
+//if currently there is one additional line of text compared to the previous update,
+//the next input element should be focused on
 let currentLinesAmount = 0,
     previousUpdateLinesAmount = 0;
 
 
+//so basically the only way to place smth on a ring is to have it as several different objects
+//but that brings the problem of entering smth longer than line in an input/textarea
+//so this functions manually simulates a textare by connecting many text input elements
+//its at the same time the hackiest and most complex thing about this project
 function ConnectedInputsAsSeperateComponents(amount: number, widthMeasuringDivRef: RefObject<HTMLDivElement>,
     refArray: RefObject<HTMLInputElement>[], cssClasses: string): ReactNode[] {
 
     const inputElements = Array.from(Array(amount)).map((element, i, allInputs) =>
-        element = (<input ref={refArray[i]} key={i} type={"text"} className={cssClasses}
-            onChange={() => updateAllInputs(refArray, widthMeasuringDivRef, "")}
+        element =
+        <input ref={refArray[i]} key={i} type={"text"} className={cssClasses}
 
+            onChange={() => updateAllInputs(refArray, widthMeasuringDivRef, "")}
             onKeyDown={(e: KeyboardEvent) => {
                 keydownInputHandler(e, i, refArray, widthMeasuringDivRef, cssClasses)
             }}
-        />)
+        />
     );
 
 
@@ -23,14 +33,17 @@ function ConnectedInputsAsSeperateComponents(amount: number, widthMeasuringDivRe
 }
 
 
-function keydownInputHandler(e: KeyboardEvent, selfIndex: number,
+function keydownInputHandler(e: KeyboardEvent, selfIndex: number/*index of the input that triggered the event*/,
     inputRefs: RefObject<HTMLInputElement>[], widthMeasuringDivRef: RefObject<HTMLDivElement>, cssClasses: string) {
+
     const allInputs: HTMLInputElement[] = [];
+    //fills allInputs with the actual inputs, not the refs, if ref.current is a thing
     inputRefs.forEach(ref => ref.current ? allInputs.push(ref.current) : undefined);
 
-    const self = allInputs[selfIndex],
-        next = allInputs[selfIndex + 1],
-        previous = allInputs[selfIndex - 1];
+    const self = allInputs[selfIndex],/*the input that triggered the event*/
+        next = allInputs[selfIndex + 1],/*the input below self*/
+        previous = allInputs[selfIndex - 1];/*the input above self*/
+
 
     if (e.key === "Enter") {
         //just in case
@@ -40,37 +53,51 @@ function keydownInputHandler(e: KeyboardEvent, selfIndex: number,
         const caretPosition = self.selectionStart;
         const inputValue = self.value;
 
-        if (caretPosition !== null) {
+        if (caretPosition !== null/*should never be the case, but typescript*/
+            /*not if(caretPosition)... as then a caretPosition of 0 would be "illegal"*/) {
+            //add a zws encircled in normal spaces at the caret position 
             self.value = inputValue.substring(0, caretPosition)
                 + " " +/*zero width space*/"​" + " " + inputValue.substring(caretPosition);
 
-            updateAllInputs(inputRefs, widthMeasuringDivRef, "");
-            //next.setSelectionRange(0, 0);
-        }
-
-    } else if (e.key === "Backspace") {
-        if (self.selectionStart === 0) {
-            e.stopPropagation();
-            e.preventDefault();
             updateAllInputs(inputRefs, widthMeasuringDivRef, "");
         }
 
     } else if (e.key === "ArrowDown") {
         e.stopPropagation();
         e.preventDefault();
-        next?.focus();
-        next?.setSelectionRange(self.selectionStart, self.selectionStart);
+        //if its the last input element (no next element), then the input element below it is the first element
+        if (next) {
+            next.focus();
+            next.setSelectionRange(self.selectionStart, self.selectionStart);
+        }else{
+            allInputs[0].focus();
+            allInputs[0].setSelectionRange(self.selectionStart, self.selectionStart);
+        }
 
     } else if (e.key === "ArrowUp") {
         e.stopPropagation();
         e.preventDefault();
-        previous?.focus();
-        previous?.setSelectionRange(self.selectionStart, self.selectionStart);
+        //if its the first input element (no previous element), then the input element above it is the last element
+        if (previous) {
+            previous.focus();
+            previous.setSelectionRange(self.selectionStart, self.selectionStart);
+        }else{
+            allInputs.at(-1)?.focus();
+            allInputs.at(-1)?.setSelectionRange(self.selectionStart, self.selectionStart);
+        }
     }
 }
 
 
 async function updateAllInputs(inputRefs: RefObject<HTMLInputElement>[], widthMeasuringDivRef: RefObject<HTMLDivElement>, cssClasses: string) {
+    //I do only vagely know what happens here
+    //so basically it loops over all the lines,
+    //and looks at every word in every line
+    //if the word doesn't fit into the current line or there is a zws,
+    //the programm goes to the next line
+    //also for some reason every new line starts with a " "
+    //so I made this a feature and now even the first line starts with a " ",
+    //which it wouldn't normally do
     const inputElements: HTMLInputElement[] = [];
     inputRefs.forEach(ref => ref.current ? inputElements.push(ref.current) : undefined);
 

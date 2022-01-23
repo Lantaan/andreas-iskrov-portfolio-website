@@ -1,12 +1,14 @@
 import * as THREE from 'three'
-import React from 'react'
+import { Component, Children, createRef } from 'react'
 
 import TextMesh from './TextObjects'
 import ShowHideComponent from './ShowHideEventComponent'
 
 
-class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrigin: THREE.Vector3, opacityRefPoint: THREE.Vector3,
-    onSelect?:/*fires when ring becomes main ring*/ Function }, any>{
+class TextRingVarR extends Component<{
+    children: React.ReactNode, ringOrigin: THREE.Vector3,
+    opacityRefPoint/*the point from which out the opacity is calculated*/: THREE.Vector3, onSelect?:/*fires when ring becomes main ring*/ Function
+}, any>{
 
     children: React.ReactNode[];
     //Refs to the TextMesh components
@@ -20,12 +22,15 @@ class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrig
         ringOrigin: THREE.Vector3
     }>;
 
-    constructor(props: { children: React.ReactNode, ringOrigin: THREE.Vector3, opacityRefPoint: THREE.Vector3, onSelect?:/*fires when ring becomes main ring*/ Function }) {
+    constructor(props: {
+        children: React.ReactNode, ringOrigin: THREE.Vector3,
+        opacityRefPoint: THREE.Vector3/*the point from which out the opacity is calculated*/, onSelect?:/*fires when ring becomes main ring*/ Function
+    }) {
         super(props);
 
         //https://www.smashingmagazine.com/2021/08/react-children-iteration-methods/
-        this.children = React.Children.toArray(props.children);
-        this.childContainerRefs = this.children.map(() => React.createRef());
+        this.children = Children.toArray(props.children);
+        this.childContainerRefs = this.children.map(() => createRef());
 
         this.state = {
             radius: 0,
@@ -35,6 +40,7 @@ class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrig
 
     render(): React.ReactNode {
         let currentDegree = 0;
+
 
         const meshPositionsAndRotations = this.children.map((component, index) => {
             const pos = new THREE.Vector3(
@@ -47,7 +53,12 @@ class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrig
             if (this.childrenHeights[index]) {
                 const height = this.childrenHeights[index];
 
+                //if you draw a triangle, one point of which is the text ring origin,
+                //and the other two points being the top and bottom of the component,
+                //you have a triangle with 2 equal sides (radius) and one base
+                //beta is the angle between the radius and the base
                 const beta = Math.acos((height) / this.state.radius);
+                //alpha is the angle between the two equal sides
                 const alpha = Math.PI - 2 * beta;
 
                 currentDegree += alpha;
@@ -67,16 +78,19 @@ class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrig
             minDist = Math.min(...distances2dFromOpacityPoint);
 
         //array of values between 0 and 1
-        const normalizedDist = distances2dFromOpacityPoint.map(a => (a - minDist) / maxDist);
+        const normalizedDist = distances2dFromOpacityPoint.map(a => (a - minDist) / maxDist),
+            opacities = normalizedDist.map(distNorm => 1 - distNorm * 2)
 
 
         const meshes = this.children.map((component, index) => {
             const previousOpacity = Number(this.childContainerRefs[index].current?.style.opacity),
-                newOpacity = 1 - normalizedDist[index] * 2;
+                newOpacity = opacities[index];
 
+            //if the component is a ShowHideComponent check if onShow or onHide events schould be fired
             if ((component as any).ref && (component as any).ref.current && (component as any).ref.current instanceof ShowHideComponent && !isNaN(previousOpacity)) {
-                if (previousOpacity < 0.6 && newOpacity >= 0.6) ((component as any).ref.current as ShowHideComponent).onShow();
-                else if (previousOpacity >= 0.6 && newOpacity < 0.6) ((component as any).ref.current as ShowHideComponent).onHide();
+                if (previousOpacity < 0.6/*0.6 is not exactly hidden, but after some experimantation this is the best looking value for the show and hide events*/
+                    && newOpacity >= 0.6) ((component as any).ref.current as ShowHideComponent<any>).onShow();
+                else if (previousOpacity >= 0.6 && newOpacity < 0.6) ((component as any).ref.current as ShowHideComponent<any>).onHide();
             }
 
             return (<>
@@ -90,12 +104,15 @@ class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrig
         </>)
     }
 
+
     async componentDidMount() {
-        //for some reason the TextMesh objects aren't rendered yet so the function "sleeps" until they are
+        //the TextMesh objects aren't rendered yet so the function "sleeps" until they are
         while (!this.childContainerRefs[0].current) await new Promise(resolve => setTimeout(resolve, 1));
+
 
         this.childrenHeights = this.childContainerRefs.map((ref) => {
             if (ref.current) {
+                //creates a new element to read its height
                 const copyElement = document.createElement("span");
 
                 copyElement.className = ref.current.className;
@@ -110,7 +127,7 @@ class TextRingVarR extends React.Component<{ children: React.ReactNode, ringOrig
                 document.body.removeChild(copyElement)
 
 
-                //return children
+                //return kidnapped children
                 Array.from(copyElement.children).forEach(child => ref.current!.appendChild(child))
 
                 return height
