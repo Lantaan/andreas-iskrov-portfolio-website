@@ -191,8 +191,8 @@ class ThreeJSStuff extends Component<any, any> {
             <T>einer Kombination aus <Blue><HoverUnderline><LinkInNewTab href='https://threejs.org'>Three.js</LinkInNewTab></HoverUnderline></Blue></T>
             <T>und <Blue>React</Blue>, gerendert.</T>
 
-            <T>Den <Blue>Qeullcode</Blue> finden sie
-              <Blue><HoverUnderline><LinkInNewTab href='https://github.com/Lantaan/andreas-iskrov-portfolio-website'>hier</LinkInNewTab></HoverUnderline></Blue></T>
+            <T>Den <Blue>Quellcode</Blue> finden sie
+              <Blue> <HoverUnderline><LinkInNewTab href='https://github.com/Lantaan/andreas-iskrov-portfolio-website'>hier</LinkInNewTab></HoverUnderline></Blue></T>
 
             <br /> <br />
 
