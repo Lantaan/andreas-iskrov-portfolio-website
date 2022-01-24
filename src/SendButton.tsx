@@ -25,8 +25,8 @@ function SendButton(props: { connectedInputsRefArgs: RefObject<HTMLInputElement>
                             return previousValue + "\n";
                     }, "")
             })
-        });
-    }}>{pressedAtLeastOnce ? "send again" : "send"}</button>
+        }).then(()=>alert("E-Mail erfolgreich gesendet"));
+    }}>{pressedAtLeastOnce ? "Text erneut senden" : "Text senden"}</button>
 }
 
 

@@ -8,17 +8,19 @@ import SetCamera from './setCamera';
 import ConnectedInputsAsSeperateComponents from './ConnectedInputs';
 import Slider from './Slider';
 import SendButton from './SendButton';
+import { Blue, H, HoverUnderline, LinkInNewTab, SM, T } from './text-prebuild-components';
 
 
 class ThreeJSStuff extends Component<any, any> {
   textRingsAmount: number = 2;
+  slidersAmount: number = 100;
   connectedInputsAmount: number = 40;
 
   textRingRefs: RefObject<TextRingVarR>[] = Array.from(Array(this.textRingsAmount)).map(a => createRef());
   selectedRingRef: RefObject<TextRingVarR> = this.textRingRefs[0];
 
   //some custom components need refs, but get them on their own
-  specialNeedsRefs: RefObject<Slider> = createRef();
+  specialNeedsRefs: RefObject<Slider>[] = Array.from(Array(this.slidersAmount)).map(a => createRef());
   connectedInputsRef: RefObject<HTMLInputElement>[] = Array.from(Array(this.connectedInputsAmount)).map(a => createRef());
   //ref to the custom scroll bar
   ringScrollRef: RefObject<HTMLInputElement> = createRef();
@@ -70,92 +72,145 @@ class ThreeJSStuff extends Component<any, any> {
 
           <TextRingVarR ref={this.textRingRefs[1]} ringOrigin={new Vector3(50, 0, 0)} opacityRefPoint={this.state.cameraPos}
             onSelect={() => this.onselectContactMeRing()/*I dont understand why in onselectContactMeRing "this" is defined*/}>
-            <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(0)}>previous</button>
-            <span className='text-h1 text-2xl [opacity:inherit] w-32'>Contact Me</span>
-            {
-              ConnectedInputsAsSeperateComponents(this.connectedInputsAmount, this.widthMeasuringDivRef, this.connectedInputsRef,
+            {/*scroll down to find real beginning*/}
+            {ConnectedInputsAsSeperateComponents(this.connectedInputsAmount, this.widthMeasuringDivRef, this.connectedInputsRef,
                 "focus:bg-[#19b2e020] bg-transparent text-primary [opacity:inherit] outline-hidden" +
-                "border-solid border-2 border-t-0 border-b-0 border-h2 caret-h1")
-            }
+                "border-solid border-2 border-t-0 border-b-0 border-h2 caret-h1")}
             <br />
+
             <SendButton connectedInputsRefArgs={this.connectedInputsRef} />
+
             <br />
             <br />
+
+            {/*the real beginning is here, because the first line in code will be perfectly centered, but thats not what I want*/}
+            <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(0)}>zurück</button>
+            <H>Nehmen Sie Kontakt auf</H>
           </TextRingVarR>
 
 
           <TextRingVarR ref={this.textRingRefs[0]} ringOrigin={new Vector3(0, 0, 0)} opacityRefPoint={this.state.cameraPos}>
-            <div className='text-primary text-[8px] [opacity:inherit] w-48 h-3'>Ich bin</div>
+            {/*scroll down to find real beginning*/}
+            <T>
+              Aktuell besuche ich die <Blue>Q11</Blue>
+            </T>
 
-            <div className='text-h1 [opacity:inherit] w-48'>Andreas Iskrov</div>
-
-
-            <div className='text-primary [opacity:inherit] w-48 text-xs'></div>
-
-            <div className='text-primary [opacity:inherit] w-48 text-xs'>
-              Aktuell besuche ich die <span className='text-h2'>Q11</span>
-            </div>
-
-            <div className='text-primary [opacity:inherit] w-48 text-xs'>
-              des <a className='text-h2 hover:underline'
-              /*https://stackoverflow.com/questions/15551779/open-link-in-new-tab-or-window*/
-                target="_blank" rel="noopener noreferrer" href='https://www.ovtg.de/index.php?id=2'>Otto-von-Taube-Gymnasium</a>
-            </div>
-
-            <br/>
-
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Meine größte schwäche ist, dass ich</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>9-10h Schlaf brauche.</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Das bedeutet, dass ich ca. jetzt</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>schlafen gehen muss.</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Deshalb schiebe ich das Schreiben</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>auf morgen auf und hoffe dass Sie</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>(ich schätze Mal Check 24) das nie</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>sehen. Wenn ich jetzt wirklich am</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>ersten Tag nach Bewerbungsschluss</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>angeschaut werde hab ich halt Pech</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>gehabt. Im folgenden finden Sie</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Platzhalter um zu zeigen was meine</div>
-            <div className='text-primary [opacity:inherit] w-48 h-4 text-xs'>Webseite kann. Und drücken Sie auf jeden Fall auf den "weiter" Knopf.</div>
+            <T>
+              des <Blue><HoverUnderline>
+                <LinkInNewTab href='https://www.ovtg.de/index.php?id=2'>Otto-von-Taube-Gymnasium</LinkInNewTab>
+              </HoverUnderline></Blue>
+            </T>
 
             <br />
 
-            <div className='text-h2 text-xl [opacity:inherit] w-32'>The</div>
-            <Slider ref={this.specialNeedsRefs} fillTime={1000} width={1000} height={30} maxValue={70}
-              classNameContainer={"relative -left-14 top-1"}
+            <T>Aufgrund meiner Faszination für</T>
+            <T><Blue>Physik</Blue> und <Blue>Informatik</Blue></T>
+            <T>besuche ich das <Blue><HoverUnderline><LinkInNewTab href='http://tumkolleg.ovtg.de'>TUM-Kolleg</LinkInNewTab></HoverUnderline></Blue>,</T>
+            <T>ein Förderprogramm der</T>
+            <T>Technischen Universität München</T>
+            <T>für <Blue>MINT-begabte</Blue> Schülerinnen und</T>
+            <T>Schüler.</T>
+
+            <br /> <br />
+
+            <H>Kompetenzen</H>
+
+            <T><Blue>JavaScript</Blue></T>
+            <Slider ref={this.specialNeedsRefs[0]} fillTime={1000} height={30} maxValue={140}
+              classNameContainer={"relative -left-24 top-2"}
               classNameFG={"bg-h2 [opacity:inherit] block rounded [top:-1px]"}
               classNameFGHover={"bg-transparent border-h2 border-r-2 [opacity:inherit] block rounded [top:-1px]"}
-              classNameBG={"border-h2 border-2 w-32 h-8 rounded-md"} bgBorderWidth={2}>
-              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>quick</div>
-              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>lazy</div>
-              <div className='text-[8px] text-white transition duration-100 hover:scale-150 blackShadowOnhover'>dog</div>
+              classNameBG={"border-h2 border-2 w-40 h-8 rounded-md"} bgBorderWidth={2}>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>TypeScript</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>React</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Express</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Three.js</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Node.js</div>
             </Slider>
 
-            <div className='text-primary [opacity:inherit] w-32'>asdasdasdadsas</div>
-            <div className='text-primary [opacity:inherit] w-32'>dfdgdfg</div>
-            <div className='text-primary [opacity:inherit] w-32'>vsdvxyy</div>
+            <br />
 
-            <div className='text-primary [opacity:inherit] w-32'>kkkksdfsdfbv</div>
-            <div className='text-primary [opacity:inherit] w-32'>aaaaaa</div>
-            <div className='text-primary [opacity:inherit] w-32'>kjlxc xsbfdb</div>
-            <div className='text-primary [opacity:inherit] w-32'>12332453546</div>
-            <div className='text-primary [opacity:inherit] w-32'>püäpü+#dfg</div>
-            <div className='text-primary [opacity:inherit] w-32'>,m.lk-klöoi</div>
-            <div className='text-primary [opacity:inherit] w-32'>hu cxvbse </div>
-            <div className='text-primary [opacity:inherit] w-32'>90570ßßß</div>
-            <div className='text-primary [opacity:inherit] w-32'>+ü##+poötzhcxd</div>
-            <div className='text-primary [opacity:inherit] w-32'>dfghsert32</div>
-            <div className='text-primary [opacity:inherit] w-32'>mn.,iolö</div>
-            <div className='text-primary [opacity:inherit] w-32'>qqewscxopkähj</div>
-
-            <button className='text-h2 border-2 border-h2 rounded-md hover:bg-h2 w-32 hover:text-black' onClick={() => this.changeToRing(1)}>weiter</button>
+            <T><Blue>CSS / HTML</Blue></T>
+            <Slider ref={this.specialNeedsRefs[1]} fillTime={1000} height={22} maxValue={80}
+              classNameContainer={"relative -left-24 top-2"}
+              classNameFG={"bg-h2 [opacity:inherit] block rounded [top:-1px]"}
+              classNameFGHover={"bg-transparent border-h2 border-r-2 [opacity:inherit] block rounded [top:-1px]"}
+              classNameBG={"border-h2 border-2 w-40 h-6 rounded-md"} bgBorderWidth={2}>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Tailwind CSS</div>
+            </Slider>
 
             <br />
+
+            <T><Blue>Java</Blue></T>
+            <Slider ref={this.specialNeedsRefs[2]} fillTime={1000} height={14} maxValue={110}
+              classNameContainer={"relative -left-24 top-2"}
+              classNameFG={"bg-h2 [opacity:inherit] block rounded [top:-1px]"}
+              classNameFGHover={"bg-transparent border-h2 border-r-2 [opacity:inherit] block rounded [top:-1px]"}
+              classNameBG={"border-h2 border-2 w-40 h-4 rounded-md"} bgBorderWidth={2}>
+            </Slider>
+
+            <br />
+
+            <T><Blue>Weiteres</Blue></T>
+            <Slider ref={this.specialNeedsRefs[3]} fillTime={1000} height={20} maxValue={80}
+              classNameContainer={"relative -left-24 top-2"}
+              classNameFG={"bg-h2 [opacity:inherit] block rounded [top:-1px]"}
+              classNameFGHover={"bg-transparent border-h2 border-r-2 [opacity:inherit] block rounded [top:-1px]"}
+              classNameBG={"border-h2 border-2 w-40 h-6 rounded-md"} bgBorderWidth={2}>
+                <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>LaTeX</div>
+                <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Blender</div>
+            </Slider>
+
+            <br />
+
+            <T><Blue>Sprachen</Blue></T>
+            <Slider ref={this.specialNeedsRefs[4]} fillTime={1000} height={30} maxValue={140}
+              classNameContainer={"relative -left-24 top-2"}
+              classNameFG={"bg-h2 [opacity:inherit] block rounded [top:-1px]"}
+              classNameFGHover={"bg-transparent border-h2 border-r-2 [opacity:inherit] block rounded [top:-1px]"}
+              classNameBG={"border-h2 border-2 w-40 h-8 rounded-md"} bgBorderWidth={2}>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Deutsch</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Englisch</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Russisch</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Ukrainisch</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Französisch</div>
+              <div className='text-primary text-[8px] [opacity:inherit] transition duration-100 hover:scale-150 blackShadowOnhover'>Latein</div>
+            </Slider>
+
+            <br /> <br />
+
+            <H>Über diese Webseite</H>
+            <T>Falls Sie sich wundern, das ist keine</T>
+            <T>CSS3d Transformation. Der gesamte</T>
+            <T>Text wird in echtem 3d mit Hilfe von</T>
+            <T>
+              <Blue><HoverUnderline><LinkInNewTab href='https://threejs.org'>Three.js</LinkInNewTab></HoverUnderline></Blue>
+              , um genauer zu sein
+              <Blue> <HoverUnderline><LinkInNewTab href='https://github.com/pmndrs/drei#html'>drei</LinkInNewTab></HoverUnderline></Blue>
+            </T>
+            <T>einer Kombination aus <Blue><HoverUnderline><LinkInNewTab href='https://threejs.org'>Three.js</LinkInNewTab></HoverUnderline></Blue></T>
+            <T>und <Blue>React</Blue>, gerendert.</T>
+
+            <T>Den <Blue>Qeullcode</Blue> finden sie
+              <Blue><HoverUnderline><LinkInNewTab href='https://github.com/Lantaan/andreas-iskrov-portfolio-website'>hier</LinkInNewTab></HoverUnderline></Blue></T>
+
+            <br /> <br />
+
+            <div className='text-h1 text-sm [opacity:inherit] w-48'>Ihnen gefällt was Sie sehen?</div>
+            <button className='text-h2 text-base border-2 border-h2 rounded-md top-2 relative hover:bg-h2 w-48 hover:text-black' onClick={() => this.changeToRing(1)}>
+              nehmen Sie Kontakt auf</button>
+
+            <br /> <br />
+
+            {/*the real beginning is here, because the first line in code will be perfectly centered, but thats not what I want*/}
+            <SM>Ich bin</SM>
+
+            <H>Andreas Iskrov</H>
 
           </TextRingVarR>
 
         </Canvas>
-      </span>
+      </span >
     )
   }
 

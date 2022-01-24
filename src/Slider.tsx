@@ -5,7 +5,7 @@ import ShowHideComponent from "./ShowHideEventComponent";
 
 
 class Slider extends ShowHideComponent<{
-    width: number, height: number, maxValue: number, fillTime: number,
+    height: number, maxValue: number, fillTime: number,
     classNameBG: string, classNameFG: string, classNameFGHover: string, classNameContainer: string,//css classes that are applied to the respected elements
     children: React.ReactNode, bgBorderWidth: number
 }> {
@@ -30,7 +30,7 @@ class Slider extends ShowHideComponent<{
 
 
     constructor(props: {
-        width: number, height: number, maxValue: number, fillTime: number,
+        height: number, maxValue: number, fillTime: number,
         classNameBG: string, classNameFG: string, classNameFGHover: string, classNameContainer: string,//css classes that are applied to the respected elements
         children: React.ReactNode, bgBorderWidth: number
     }) {
@@ -55,6 +55,7 @@ class Slider extends ShowHideComponent<{
         const childrenInContainers = this.children.map((component, i) => {
             if (this.sim.childrenBoundingBoxes[i]) {
                 const boundingBox = this.sim.childrenBoundingBoxes[i];
+
                 return <span ref={this.childContainerRefs[i]}
                     style={{ left: boundingBox.x, top: boundingBox.y }} key={i}
                     className={"absolute hover:z-10 select-none " + (this.state.aabbGrabbed ? "cursor-grabbing" : "cursor-grab")}
@@ -144,9 +145,11 @@ class Slider extends ShowHideComponent<{
 
         //create a bounding box for each child. this bounsing box is then added to the sim
         this.childContainerRefs.forEach(ref => {
-            if (ref.current) {
+            if (ref.current && this.fgRef.current) {
 
-                let childBoundingBox = new AABB(Math.random() * 60, Math.random() * 10, ref.current.clientWidth, ref.current.clientHeight);
+                let childBoundingBox = new AABB(Math.random() * this.fgRef.current.clientWidth, Math.random() * this.fgRef.current.clientHeight,
+                    ref.current.clientWidth, ref.current.clientHeight);
+                    
                 let tries: number = 0;
 
 
@@ -156,7 +159,7 @@ class Slider extends ShowHideComponent<{
                     || this.sim.childrenBoundingBoxes.find(aabb => aabb.checkCollision(childBoundingBox))) && tries < 1000) {
 
                     tries++;
-                    childBoundingBox = new AABB(Math.random() * 60, Math.random() * 10,
+                    childBoundingBox = new AABB(Math.random() * this.fgRef.current.clientWidth, Math.random() * this.fgRef.current.clientHeight,
                         ref.current.clientWidth, ref.current.clientHeight);
                 }
 
